@@ -13,6 +13,7 @@ import {
 import MainPage from './MainPage';
 import AddPage from './AddPage';
 import ProjectPage from './ProjectPage';
+import db from './db';
 
 class ProjectApp extends Component {
   render() {
@@ -28,6 +29,8 @@ class ProjectApp extends Component {
         }} />
     );
   }
+
+
 
   renderScene(route, navigator) {
     var routeId = route.id;

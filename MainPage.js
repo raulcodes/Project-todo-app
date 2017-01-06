@@ -9,37 +9,24 @@ import {
 } from 'react-native';
 import {
   Icon,
-  Card
+  Card,
+  List,
 } from 'react-native-elements';
+import db from './db';
 
-const users = [
-  {
-    name: 'brynn',
-    avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg'
-  },
-  {
-    name: 'thot leader',
-    avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/evagiselle/128.jpg'
-  },
-  {
-    name: 'jsa',
-    avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/jsa/128.jpg'
-  },
-  {
-    name: 'talhaconcepts',
-    avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/talhaconcepts/128.jpg'
-  },
-  {
-    name: 'andy vitale',
-    avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/andyvitale/128.jpg'
-  },
-  {
-    name: 'katy friedson',
-    avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/kfriedson/128.jpg'
-  }
-]
+const users = [];
+var names = [];
+var infos = [];
 
 export default class MainPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      names: [],
+      infos: [],
+    };
+  }
+
   render() {
     return (
       <Navigator
@@ -48,6 +35,17 @@ export default class MainPage extends Component {
   }
 
   renderScene(route, navigator) {
+    db.DB.projects.find().then((resp) => {
+      var str = JSON.stringify(resp);
+      str = JSON.parse(str);
+      console.log(str.length);
+      for (var i = 0; i < str.length; i++) {
+        console.log(str[i].name);
+        names.push(str[i].name);
+        // infos.push(str[i].info);
+        // console.log(this.state.names[i]);
+      }
+    });
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -64,32 +62,38 @@ export default class MainPage extends Component {
             </Text>
           </View>
         </View>
-        <Card containerStyle={styles.card}>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>
-              Studio.init
-            </Text>
-            <Text style={styles.cardProgess}>
-              54%
-            </Text>
-          </View>
-        </Card>
-        <Card containerStyle={styles.card}>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>
-              TruRecruit
-            </Text>
-            <Text style={styles.cardProgess}>
-              67%
-            </Text>
-          </View>
-        </Card>
+        <List>
+          {
+            this.state.names.map((item, i) => (
+              <Card containerStyle={styles.card}>
+                <TouchableHighlight
+                  onPress={this.gotoProject.bind(this)}
+                  style={styles.cardTouch}>
+                  <View style={styles.cardContent}>
+                    <Text style={styles.cardTitle}>
+                      {item}
+                    </Text>
+                    <Text style={styles.cardProgess}>
+                      54%
+                    </Text>
+                    <Icon
+                      name='chevron-right'
+                      type='material'
+                      color='#9E9E9E'
+                      size={40}/>
+                  </View>
+                </TouchableHighlight>
+              </Card>
+            ))
+          }
+        </List>
         <Icon
+          reverse
           raised
           name='add'
           size={30}
           type='material'
-          color='#f50'
+          color='purple'
           onPress={this.gotoAdd.bind(this)}
           containerStyle={styles.button}/>
       </View>
@@ -153,7 +157,9 @@ const styles = StyleSheet.create({
   },
   cardProgess: {
     fontSize: 30,
-    marginLeft: 120,
+    marginLeft: 90,
     fontWeight: 'bold',
+  },
+  cardTouch: {
   },
 });
