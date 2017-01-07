@@ -46,7 +46,8 @@ export default class AddPage extends Component {
         Alert.alert('uiy: ' + this.state.field0[1].info);
       }
     });
-    // Alert.alert('yo:' + this.state.fields);
+    db.DB.projects.destroy();
+    Alert.alert('yo:' + this.state.fields);
   }
 
   render() {
@@ -80,9 +81,6 @@ export default class AddPage extends Component {
             multiline
             value={this.state.info}
             onChangeText={(info) => {this.setState({info})}}
-            />
-          <FormInput
-            value={this.state.field1}
             />
           <Button
             onPress={this.submit.bind(this)}

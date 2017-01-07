@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {
   Icon,
+  Card,
 } from 'react-native-elements';
 import db from './db';
 
@@ -18,6 +19,15 @@ export default class ProjectPage extends Component {
       name: '',
       info: '',
     };
+  }
+
+  componentWillMount() {
+    db.DB.projects.find().then((resp) => {
+      var str = JSON.stringify(resp);
+      str = JSON.parse(str);
+      this.setState({ name: str[this.props.index].name, info: str[this.props.index].info });
+      // Alert.alert('yo:' + this.state.name + ' ' + this.state.info);
+    });
   }
 
   render() {
@@ -33,16 +43,18 @@ export default class ProjectPage extends Component {
               onPress={this.gotoMain.bind(this)}
               size={30}/>
             <Text style={styles.headerTitle}>
-              {this.state.name}
+              Project Info
             </Text>
           </View>
         </View>
-        <Icon
-          name='close'
-          type='material'
-          color='black'
-          onPress={this.display.bind(this)}
-          size={50}/>
+        <Card>
+          <Text style={styles.title}>
+            {this.state.name}
+          </Text>
+          <Text style={styles.info}>
+            {this.state.info}
+          </Text>
+        </Card>
       </View>
     );
   }
@@ -54,16 +66,6 @@ export default class ProjectPage extends Component {
       sceneConfig: Navigator.SceneConfigs.SwipeFromLeft,
     });
   }
-
-  display() {
-    db.DB.projects.find().then((resp) => {
-      var str = JSON.stringify(resp);
-      str = JSON.parse(str);
-      this.setState({ name: str[1].name, info: str[1].info });
-      Alert.alert('yo:' + this.state.name + ' ' + this.state.info);
-    });
-  }
-
 }
 
 const styles = StyleSheet.create({
@@ -87,5 +89,17 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginLeft: 20,
     color: 'white',
+  },
+  title: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    color: 'purple',
+    marginLeft: 20,
+    marginTop: 10,
+  },
+  info: {
+    fontSize: 15,
+    marginLeft: 20,
+    marginTop: 15,
   },
 });

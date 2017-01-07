@@ -16,6 +16,7 @@ import ProjectPage from './ProjectPage';
 import db from './db';
 
 class ProjectApp extends Component {
+
   render() {
     return (
       <Navigator
@@ -37,7 +38,8 @@ class ProjectApp extends Component {
     if (routeId === 'MainPage') {
       return (
         <MainPage
-          navigator={navigator} />
+          navigator={navigator}
+          />
       );
     }
     if (routeId === 'AddPage') {
@@ -49,6 +51,7 @@ class ProjectApp extends Component {
     if (routeId === 'ProjectPage') {
       return (
         <ProjectPage
+          index={route.index}
           navigator={navigator} />
       );
     }

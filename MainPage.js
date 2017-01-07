@@ -6,6 +6,7 @@ import {
   Button,
   TouchableHighlight,
   Navigator,
+  ScrollView,
 } from 'react-native';
 import {
   Icon,
@@ -15,37 +16,42 @@ import {
 import db from './db';
 
 const users = [];
-var names = [];
-var infos = [];
 
 export default class MainPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      names: [],
+      nameList: [],
       infos: [],
     };
   }
 
-  render() {
-    return (
-      <Navigator
-        renderScene={this.renderScene.bind(this)} />
-    );
-  }
-
-  renderScene(route, navigator) {
+  componentWillMount() {
+    var names = [];
     db.DB.projects.find().then((resp) => {
       var str = JSON.stringify(resp);
       str = JSON.parse(str);
       console.log(str.length);
       for (var i = 0; i < str.length; i++) {
-        console.log(str[i].name);
+        //console.log(str[i].name);
         names.push(str[i].name);
         // infos.push(str[i].info);
         // console.log(this.state.names[i]);
       }
+      console.log(names);
+      this.setState({ nameList: names });
     });
+  }
+
+  render() {
+    return (
+      <Navigator
+        renderScene={this.renderScene.bind(this)}
+        />
+    );
+  }
+
+  renderScene(route, navigator) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -62,31 +68,35 @@ export default class MainPage extends Component {
             </Text>
           </View>
         </View>
-        <List>
-          {
-            this.state.names.map((item, i) => (
-              <Card containerStyle={styles.card}>
-                <TouchableHighlight
-                  onPress={this.gotoProject.bind(this)}
-                  style={styles.cardTouch}>
-                  <View style={styles.cardContent}>
-                    <Text style={styles.cardTitle}>
-                      {item}
-                    </Text>
-                    <Text style={styles.cardProgess}>
-                      54%
-                    </Text>
-                    <Icon
-                      name='chevron-right'
-                      type='material'
-                      color='#9E9E9E'
-                      size={40}/>
-                  </View>
-                </TouchableHighlight>
-              </Card>
-            ))
-          }
-        </List>
+        <ScrollView>
+          <List containerStyle={styles.listContainer}>
+            {
+              this.state.nameList.map((item, i) => (
+                <Card containerStyle={styles.card} key={i}>
+                  <TouchableHighlight
+                    key={i}
+                    onPress={() => this.gotoProject(i)}
+                    style={styles.cardTouch}>
+                    <View style={styles.cardContent}>
+                      <Text style={styles.cardTitle}
+                        key={i}>
+                        {item}
+                      </Text>
+                      <Text style={styles.cardProgess}>
+                        69%
+                      </Text>
+                      <Icon
+                        name='chevron-right'
+                        type='material'
+                        color='#9E9E9E'
+                        size={40}/>
+                    </View>
+                  </TouchableHighlight>
+                </Card>
+              ))
+            }
+          </List>
+        </ScrollView>
         <Icon
           reverse
           raised
@@ -108,10 +118,12 @@ export default class MainPage extends Component {
     });
   }
 
-  gotoProject() {
+  gotoProject(i) {
+    console.log(i);
     this.props.navigator.push({
       id: 'ProjectPage',
-      name: 'Project Page',
+      name: 'hello',
+      index: i,
     });
   }
 }
@@ -143,6 +155,13 @@ const styles = StyleSheet.create({
     marginLeft: 275,
     position: 'absolute',
   },
+  listContainer: {
+    marginTop: 0,
+    marginBottom: 15,
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+    backgroundColor: '#F5FCFF',
+  },
   card: {
     height: 75,
     justifyContent: 'center',
@@ -157,7 +176,7 @@ const styles = StyleSheet.create({
   },
   cardProgess: {
     fontSize: 30,
-    marginLeft: 90,
+    marginLeft: 60,
     fontWeight: 'bold',
   },
   cardTouch: {
