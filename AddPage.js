@@ -31,11 +31,13 @@ export default class AddPage extends Component {
 
   submit() {
     // Alert.alert('yo: ' + this.state.name + ' ' + this.state.info);
+    var d = new Date();
+    var f = d.getTime();
 
     db.DB.projects.add({
       name: this.state.name,
       info: this.state.info,
-
+      date: f,
     });
 
     db.names.push(this.state.name);

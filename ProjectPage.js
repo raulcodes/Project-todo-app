@@ -29,7 +29,7 @@ export default class ProjectPage extends Component {
       str = JSON.parse(str);
       console.log("INDEX IN PAGE: " + this.props.index);
       this.setState({ name: str[this.props.index].name, info: str[this.props.index].info });
-      // Alert.alert('yo:' + this.state.name + ' ' + this.state.info);
+      // Alert.alert('yo:' + this.state.name + ' ' + this.state.info + ' ' + str[this.props.index].date);
     });
   }
 
@@ -72,12 +72,12 @@ export default class ProjectPage extends Component {
     db.DB.projects.remove({ where: {
       and: [{ name: this.state.name }, { info: this.state.info }]}
     });
-    var i = db.names.indexOf(this.state.name);
+    var i = db.name.indexOf(this.state.name);
     db.names.splice(i, 1);
     Actions.pop();
     setTimeout(() => {
       Actions.refresh({names: db.names});
-      console.log("zzzz");
+      // console.log("zzzz");
       console.log(db.names);
     }, 10);
   }

@@ -16,7 +16,11 @@ import {
 import db from './db';
 import { Actions } from 'react-native-router-flux';
 
-const users = [];
+function project(name, info, date) {
+  this.name = name;
+  this.info = info;
+  this.date = date;
+}
 
 export default class MainPage extends Component {
   constructor(props) {
@@ -27,26 +31,38 @@ export default class MainPage extends Component {
     };
   }
 
+  daysSince(i) {
+    var minutes = 1000 * 60;
+    var hours = minutes * 60;
+    var days = hours * 24;
+    var d = new Date();
+    var t = d.getTime();
+    var l = t - i;
+    console.log(Math.floor(l/days));
+    return Math.floor( l / days );
+  }
+
   componentWillMount() {
-    if (true) {
-      console.log('HELLO');
+    if (db.names.length == 0) {
+      // console.log('HELLO');
       var names = [];
       db.DB.projects.find().then((resp) => {
         var str = JSON.stringify(resp);
         str = JSON.parse(str);
         console.log(str.length);
         for (var i = 0; i < str.length; i++) {
+          var p = new project(str[i].name, '', this.daysSince(str[i].date));
           //console.log(str[i].name);
-          db.names.push(str[i].name);
+          db.projects.push(p);
           // infos.push(str[i].info);
           // console.log(this.state.names[i]);
         }
-        console.log(db.names);
+        console.log(db.projects);
         this.setState({ nameList: names });
       });
     }
   }
-  
+
   render() {
     return (
       <View style={styles.container}>
@@ -63,10 +79,10 @@ export default class MainPage extends Component {
             </Text>
           </View>
         </View>
-        <ScrollView>
+        <ScrollView style={styles.scrollContainer}>
           <List containerStyle={styles.listContainer}>
             {
-              db.names.map((item, i) => (
+              db.projects.map((item, i) => (
                 <TouchableNativeFeedback
                   key={i}
                   onPress={() => this.gotoProject(i)}
@@ -76,10 +92,10 @@ export default class MainPage extends Component {
                       <View style={styles.cardContent}>
                         <Text style={styles.cardTitle}
                           key={i}>
-                          {item}
+                          {item.name}
                         </Text>
                         <Text style={styles.cardProgess}>
-
+                          {item.date}
                         </Text>
                         <Icon
                           name='chevron-right'
@@ -95,15 +111,17 @@ export default class MainPage extends Component {
             }
           </List>
         </ScrollView>
-        <Icon
-          reverse
-          raised
-          name='add'
-          size={30}
-          type='material'
-          color='#ff4081'
-          onPress={Actions.AddPage}
-          containerStyle={styles.button}/>
+        <View style={styles.buttonContainer}>
+          <Icon
+            reverse
+            raised
+            name='add'
+            size={30}
+            type='material'
+            color='#ff4081'
+            onPress={Actions.AddPage}
+            containerStyle={styles.button}/>
+        </View>
       </View>
     );
   }
@@ -156,10 +174,23 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     color: 'white',
   },
-  button: {
-    marginTop: 475,
-    marginLeft: 275,
+  scrollContainer: {
+    flex: 1,
+    borderColor: 'pink',
+  },
+  buttonContainer: {
+    width: 100,
+    height: 100,
+    marginLeft: 300,
+    marginTop: 550,
+    alignSelf: 'flex-end',
+    alignItems: 'flex-start',
     position: 'absolute',
+    justifyContent: 'flex-start',
+  },
+  button: {
+    position: 'absolute',
+    alignSelf: 'flex-end',
   },
   listContainer: {
     marginTop: 0,
