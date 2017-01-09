@@ -6,7 +6,9 @@ const DB = {
 
 var names = [];
 var infos = [];
+var i = 0;
 
 exports.names = names;
 exports.infos = infos;
+exports.i = i;
 exports.DB = DB;

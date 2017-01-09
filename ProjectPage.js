@@ -9,8 +9,10 @@ import {
 import {
   Icon,
   Card,
+  Button,
 } from 'react-native-elements';
 import db from './db';
+import { Actions } from 'react-native-router-flux';
 
 export default class ProjectPage extends Component {
   constructor(props) {
@@ -25,6 +27,7 @@ export default class ProjectPage extends Component {
     db.DB.projects.find().then((resp) => {
       var str = JSON.stringify(resp);
       str = JSON.parse(str);
+      console.log("INDEX IN PAGE: " + this.props.index);
       this.setState({ name: str[this.props.index].name, info: str[this.props.index].info });
       // Alert.alert('yo:' + this.state.name + ' ' + this.state.info);
     });
@@ -55,28 +58,45 @@ export default class ProjectPage extends Component {
             {this.state.info}
           </Text>
         </Card>
+        <Button
+          onPress={this.delete.bind(this)}
+          buttonStyle={styles.button}
+          title='DELETE PROJECT'
+          borderRadius={40}
+          backgroundColor='red'/>
       </View>
     );
   }
 
-  gotoMain() {
-    this.props.navigator.push({
-      id: 'MainPage',
-      name: 'Main Page',
-      sceneConfig: Navigator.SceneConfigs.SwipeFromLeft,
+  delete() {
+    db.DB.projects.remove({ where: {
+      and: [{ name: this.state.name }, { info: this.state.info }]}
     });
+    var i = db.names.indexOf(this.state.name);
+    db.names.splice(i, 1);
+    Actions.pop();
+    setTimeout(() => {
+      Actions.refresh({names: db.names});
+      console.log("zzzz");
+      console.log(db.names);
+    }, 10);
+  }
+
+  gotoMain() {
+    Actions.pop();
+    Actions.refresh();
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: '#512da8',
     flex: 1,
   },
   header: {
     height: 55,
     justifyContent: 'center',
-    backgroundColor: 'purple',
+    backgroundColor: '#673ab7',
   },
   headerContent: {
     flexDirection: 'row'
@@ -94,12 +114,15 @@ const styles = StyleSheet.create({
     fontSize: 35,
     fontWeight: 'bold',
     color: 'purple',
-    marginLeft: 20,
+    marginLeft: 10,
     marginTop: 10,
   },
   info: {
     fontSize: 15,
-    marginLeft: 20,
+    marginLeft: 10,
     marginTop: 15,
+  },
+  button: {
+    marginTop: 40,
   },
 });

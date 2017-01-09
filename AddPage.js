@@ -14,6 +14,10 @@ import {
 } from 'react-native-elements';
 import db from './db';
 import Store from 'react-native-store';
+import { Hoshi } from 'react-native-textinput-effects';
+import { Actions } from 'react-native-router-flux';
+
+var names = [];
 
 export default class AddPage extends Component {
   constructor(props) {
@@ -22,38 +26,39 @@ export default class AddPage extends Component {
       name: '',
       info: '',
       fields: '',
-      field0: [],
-      field1: '',
     };
   }
 
   submit() {
-    Alert.alert('yo: ' + this.state.name + ' ' + this.state.info);
+    // Alert.alert('yo: ' + this.state.name + ' ' + this.state.info);
+
     db.DB.projects.add({
       name: this.state.name,
       info: this.state.info,
-    });
-    this.setState({name: '', info: ''});
-  }
 
-  display() {
-    db.DB.projects.find().then((resp) => {
-      if (resp) {
-        var str = JSON.stringify(resp);
-        var stri = JSON.parse(str);
-        this.setState({ field0: stri });
-        this.setState({ field1: stri[1].info })
-        Alert.alert('uiy: ' + this.state.field0[1].info);
-      }
     });
-    db.DB.projects.destroy();
-    Alert.alert('yo:' + this.state.fields);
+
+    db.names.push(this.state.name);
+    // db.DB.projects.destroy();
+    Actions.pop();
+    setTimeout(() => {
+      Actions.refresh({names: db.names});
+      console.log("zzzz");
+      console.log(db.names);
+    }, 10);
+    // Actions.refresh({ names: names });
+
+    // this.props.navigator.push({
+    //   id: 'MainPage',
+    //   name: 'Main Page',
+    //   sceneConfig: Navigator.SceneConfigs.SwipeFromLeft,
+    // })
   }
 
   render() {
     const name = this.state.name;
     return (
-      <View>
+      <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <Icon
@@ -69,16 +74,17 @@ export default class AddPage extends Component {
           </View>
         </View>
         <View style={styles.input}>
-          <FormLabel>Project Name</FormLabel>
-          <FormInput
-            maxLength={20}
+          <Hoshi
+            label={'Project Name'}
+            borderColor={'#b76c94'}
+            labelStyle={styles.label}
             value={this.state.name}
             onChangeText={(name) => {this.setState({name})}}
             />
-          <FormLabel>Project Description</FormLabel>
-          <FormInput
-            maxLength={140}
-            multiline
+          <Hoshi
+            label={'Project Description'}
+            borderColor={'#b76c94'}
+            labelStyle={styles.label}
             value={this.state.info}
             onChangeText={(info) => {this.setState({info})}}
             />
@@ -87,42 +93,32 @@ export default class AddPage extends Component {
             buttonStyle={styles.button}
             title='SUBMIT'
             borderRadius={40}
-            backgroundColor='purple'/>
-          <Button
-            onPress={this.display.bind(this)}
-            buttonStyle={styles.button}
-            title='SUBMIT2'
-            borderRadius={40}
-            backgroundColor='purple'/>
+            backgroundColor='#ff4081'/>
         </View>
       </View>
     );
   }
 
   gotoMain() {
-    this.props.navigator.push({
-      id: 'MainPage',
-      name: 'Main Page',
-      sceneConfig: Navigator.SceneConfigs.SwipeFromLeft,
-    });
-  }
-
-  storeProject() {
-    store.save('projects', {
-
-    })
+    Actions.pop();
+    Actions.refresh({ yo: 'yo' });
+    // this.props.navigator.pop();
+    //   id: 'MainPage',
+    //   name: 'Main Page',
+    //   sceneConfig: Navigator.SceneConfigs.SwipeFromLeft,
+    // });
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: '#512da8',
     flex: 1,
   },
   header: {
     height: 55,
     justifyContent: 'center',
-    backgroundColor: 'purple',
+    backgroundColor: '#673ab7',
   },
   headerContent: {
     flexDirection: 'row'
@@ -138,5 +134,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 40,
+  },
+  label: {
+    color: 'white',
   }
 });
