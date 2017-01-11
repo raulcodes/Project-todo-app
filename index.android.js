@@ -23,9 +23,9 @@ class ProjectApp extends Component {
     return (
       <Router>
         <Scene key='root'>
-          <Scene key='MainPage' component={MainPage} title='MainPage' names={names}/>
+          <Scene key='MainPage' component={MainPage} title='MainPage' names={names} hideNavBar/>
           <Scene key='AddPage' component={AddPage} title='AddPage'/>
-          <Scene key='ProjectPage' component={ProjectPage} title='ProjectPage' name={''} info={''}/>
+          <Scene key='ProjectPage' component={ProjectPage} title='ProjectPage' name={''} info={''} hideNavBar/>
         </Scene>
       </Router>
     )

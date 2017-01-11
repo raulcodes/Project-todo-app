@@ -19,6 +19,12 @@ import { Actions } from 'react-native-router-flux';
 
 var names = [];
 
+function project(name, info, date) {
+  this.name = name;
+  this.info = info;
+  this.date = date;
+}
+
 export default class AddPage extends Component {
   constructor(props) {
     super(props);
@@ -40,13 +46,15 @@ export default class AddPage extends Component {
       date: f,
     });
 
-    db.names.push(this.state.name);
+    var p = new db.project(this.state.name, '', db.daysSince(f));
+
+    db.projects.push(p);
     // db.DB.projects.destroy();
     Actions.pop();
     setTimeout(() => {
-      Actions.refresh({names: db.names});
-      console.log("zzzz");
-      console.log(db.names);
+      Actions.refresh({projects: db.projects});
+      // console.log("zzzz");
+      console.log(db.projects);
     }, 10);
     // Actions.refresh({ names: names });
 
@@ -103,7 +111,7 @@ export default class AddPage extends Component {
 
   gotoMain() {
     Actions.pop();
-    Actions.refresh({ yo: 'yo' });
+    // Actions.refresh({ yo: 'yo' });
     // this.props.navigator.pop();
     //   id: 'MainPage',
     //   name: 'Main Page',

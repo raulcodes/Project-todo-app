@@ -31,27 +31,17 @@ export default class MainPage extends Component {
     };
   }
 
-  daysSince(i) {
-    var minutes = 1000 * 60;
-    var hours = minutes * 60;
-    var days = hours * 24;
-    var d = new Date();
-    var t = d.getTime();
-    var l = t - i;
-    console.log(Math.floor(l/days));
-    return Math.floor( l / days );
-  }
-
   componentWillMount() {
-    if (db.names.length == 0) {
+    if (db.projects.length == 0) {
       // console.log('HELLO');
       var names = [];
       db.DB.projects.find().then((resp) => {
         var str = JSON.stringify(resp);
         str = JSON.parse(str);
         console.log(str.length);
+        console.log(str);
         for (var i = 0; i < str.length; i++) {
-          var p = new project(str[i].name, '', this.daysSince(str[i].date));
+          var p = new db.project(str[i].name, '', db.daysSince(str[i].date));
           //console.log(str[i].name);
           db.projects.push(p);
           // infos.push(str[i].info);

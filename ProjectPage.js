@@ -20,7 +20,25 @@ export default class ProjectPage extends Component {
     this.state = {
       name: '',
       info: '',
+      date: 0,
+      fixedDate: '',
+      commits: 0,
+      word: '',
     };
+  }
+
+  fixDate(time) {
+    var months = [
+      "Jan", "Feb", "Mar", "Apr", "May",
+      "Jun", "Jul", "Aug", "Sep", "Oct",
+      "Nov", "Dec"
+    ];
+    var date = new Date(time);
+    var day = date.getDate();
+    var month = date.getMonth();
+    var year = date.getFullYear();
+    console.log('DAY: ' + day + ' ' + months[month]);
+    return (months[month] + ' ' + day + ', ' + year);
   }
 
   componentWillMount() {
@@ -28,7 +46,12 @@ export default class ProjectPage extends Component {
       var str = JSON.stringify(resp);
       str = JSON.parse(str);
       console.log("INDEX IN PAGE: " + this.props.index);
-      this.setState({ name: str[this.props.index].name, info: str[this.props.index].info });
+      this.setState({ name: str[this.props.index].name,
+                      info: str[this.props.index].info,
+                      date: db.daysSince(str[this.props.index].date),
+                      fixedDate: this.fixDate(str[this.props.index].date),
+                      commits: 24,
+                      word: 'Days'});
       // Alert.alert('yo:' + this.state.name + ' ' + this.state.info + ' ' + str[this.props.index].date);
     });
   }
@@ -46,14 +69,33 @@ export default class ProjectPage extends Component {
               onPress={this.gotoMain.bind(this)}
               size={30}/>
             <Text style={styles.headerTitle}>
-              Project Info
+              {this.state.name}
             </Text>
           </View>
         </View>
-        <Card>
-          <Text style={styles.title}>
-            {this.state.name}
-          </Text>
+        <View style={styles.numbers}>
+          <View style={styles.days}>
+            <Text>
+              {this.state.date}
+            </Text>
+            <Text>
+              {this.state.word}
+            </Text>
+          </View>
+          <View style={styles.create}>
+            <Text>
+              Created on
+            </Text>
+            <Text>
+              {this.state.fixedDate}
+            </Text>
+          </View>
+          <View style={styles.commits}>
+            <Text> {this.state.commits} </Text>
+            <Text> commits </Text>
+          </View>
+        </View>
+        <Card containerStyle={styles.card}>
           <Text style={styles.info}>
             {this.state.info}
           </Text>
@@ -70,21 +112,26 @@ export default class ProjectPage extends Component {
 
   delete() {
     db.DB.projects.remove({ where: {
-      and: [{ name: this.state.name }, { info: this.state.info }]}
+      and: [{ name: this.state.name }, { info: this.state.info }, { date: this.state.date }]}
     });
-    var i = db.name.indexOf(this.state.name);
-    db.names.splice(i, 1);
+    var p = new db.project(this.state.name, '', this.state.date);
+    var i = db.projects.indexOf(p);
+    if (i == 0) {
+      db.projects.shift();
+    } else {
+      db.projects.splice(i, 1);
+    }
     Actions.pop();
     setTimeout(() => {
-      Actions.refresh({names: db.names});
+      Actions.refresh({projects: db.projects});
       // console.log("zzzz");
-      console.log(db.names);
+      console.log(db.projects);
     }, 10);
   }
 
   gotoMain() {
     Actions.pop();
-    Actions.refresh();
+    // Actions.refresh();
   }
 }
 
@@ -94,19 +141,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 55,
-    justifyContent: 'center',
+    height: 175,
+    justifyContent: 'flex-start',
     backgroundColor: '#673ab7',
   },
   headerContent: {
-    flexDirection: 'row'
+    flexDirection: 'column'
   },
   profile: {
     alignSelf: 'flex-start',
+    marginTop: 15,
     marginLeft: 15,
   },
   headerTitle: {
-    fontSize: 25,
+    fontSize: 55,
+    fontWeight: 'bold',
+    marginTop: 40,
     marginLeft: 20,
     color: 'white',
   },
@@ -119,10 +169,37 @@ const styles = StyleSheet.create({
   },
   info: {
     fontSize: 15,
+    color: 'white',
     marginLeft: 10,
     marginTop: 15,
   },
   button: {
     marginTop: 40,
+  },
+  card: {
+    backgroundColor: '#673ab7',
+    borderColor: '#673ab7',
+    justifyContent: 'center',
+  },
+  numbers: {
+    marginTop: 15,
+    flexDirection: 'row',
+    alignSelf: 'center',
+  },
+  days: {
+    marginRight: 20,
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  create: {
+    marginRight: 20,
+    marginLeft: 20,
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  commits: {
+    marginLeft: 20,
+    alignItems: 'center',
+    flexDirection: 'column',
   },
 });
