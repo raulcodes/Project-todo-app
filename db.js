@@ -1,8 +1,10 @@
 import Store from 'react-native-store';
 
 const DB = {
-  'projects': Store.model('projects')
+  'projects': Store.model('projects'),
+  'commits': Store.model('commits')
 }
+
 
 var projects = [];
 var names = [];

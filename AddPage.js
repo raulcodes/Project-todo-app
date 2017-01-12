@@ -32,6 +32,7 @@ export default class AddPage extends Component {
       name: '',
       info: '',
       fields: '',
+      id: 0,
     };
   }
 
@@ -44,6 +45,20 @@ export default class AddPage extends Component {
       name: this.state.name,
       info: this.state.info,
       date: f,
+    }).then((res) => {
+      db.DB.projects.find({
+        where: { date: f }
+      }).then(resp => {
+        var str = JSON.stringify(resp);
+        str = JSON.parse(str);
+        console.log(str[0]._id);
+        db.DB.commits.add({
+          id: str[0]._id,
+          name: '',
+          date: 0,
+          mess: '',
+        });
+      });
     });
 
     var p = new db.project(this.state.name, '', db.daysSince(f));
@@ -56,13 +71,10 @@ export default class AddPage extends Component {
       // console.log("zzzz");
       console.log(db.projects);
     }, 10);
-    // Actions.refresh({ names: names });
+  }
 
-    // this.props.navigator.push({
-    //   id: 'MainPage',
-    //   name: 'Main Page',
-    //   sceneConfig: Navigator.SceneConfigs.SwipeFromLeft,
-    // })
+  gotoMain() {
+    Actions.pop();
   }
 
   render() {
@@ -107,16 +119,6 @@ export default class AddPage extends Component {
         </View>
       </View>
     );
-  }
-
-  gotoMain() {
-    Actions.pop();
-    // Actions.refresh({ yo: 'yo' });
-    // this.props.navigator.pop();
-    //   id: 'MainPage',
-    //   name: 'Main Page',
-    //   sceneConfig: Navigator.SceneConfigs.SwipeFromLeft,
-    // });
   }
 }
 

@@ -48,12 +48,14 @@ export default class ProjectPage extends Component {
       console.log("INDEX IN PAGE: " + this.props.index);
       this.setState({ name: str[this.props.index].name,
                       info: str[this.props.index].info,
-                      date: db.daysSince(str[this.props.index].date),
+                      date: str[this.props.index].date,
+                      daysSince: db.daysSince(str[this.props.index].date),
                       fixedDate: this.fixDate(str[this.props.index].date),
                       commits: 24,
                       word: 'Days'});
       // Alert.alert('yo:' + this.state.name + ' ' + this.state.info + ' ' + str[this.props.index].date);
     });
+
   }
 
   render() {
@@ -76,7 +78,7 @@ export default class ProjectPage extends Component {
         <View style={styles.numbers}>
           <View style={styles.days}>
             <Text>
-              {this.state.date}
+              {this.state.daysSince}
             </Text>
             <Text>
               {this.state.word}
@@ -112,15 +114,15 @@ export default class ProjectPage extends Component {
 
   delete() {
     db.DB.projects.remove({ where: {
-      and: [{ name: this.state.name }, { info: this.state.info }, { date: this.state.date }]}
-    });
+      and: [{ name: this.state.name}, { date: this.state.date }]}
+    }).then(resp => console.log('RESPONSE: ' + resp));
     var p = new db.project(this.state.name, '', this.state.date);
     var i = db.projects.indexOf(p);
-    if (i == 0) {
-      db.projects.shift();
-    } else {
+    // if (i == 0) {
+    //   db.projects.shift();
+    // } else {
       db.projects.splice(i, 1);
-    }
+    // }
     Actions.pop();
     setTimeout(() => {
       Actions.refresh({projects: db.projects});
